@@ -1,0 +1,12 @@
+[project]
+name = "pubmed-mcp-server"
+version = "0.1.0"
+description = "pubmed mcp server"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi-mcp>=0.2.0",
+    "lxml>=5.3.2",
+    "pytest>=8.3.5",
+    "requests>=2.32.3",
+]

@@ -1,7 +1,7 @@
 import requests
 from lxml import etree
 
-from service import build_pubmed_search_url, BASE_META_URL
+from service import build_pubmed_search_url, BASE_META_URL, HEADERS
 
 
 def esearch(term: str, retmax: int = 20) -> dict:
@@ -15,7 +15,7 @@ def esearch(term: str, retmax: int = 20) -> dict:
         dict: Contains total, page_size and id_list from the PubMed response.
     """
     url = build_pubmed_search_url(term, retmax=retmax)
-    response = requests.get(url)
+    response = requests.get(url, headers=HEADERS)
     response.raise_for_status()
     return parse_esearch_resp(response.text)
 
@@ -29,7 +29,7 @@ def einfo(pmid: str) -> dict:
     Returns:
         dict: Contains metadata from the PubMed response.
     """
-    response = requests.get(BASE_META_URL.format(pmid=pmid))
+    response = requests.get(BASE_META_URL.format(pmid=pmid), headers=HEADERS)
     response.raise_for_status()
 
     xml_dict = parse_einfo_resp(response.text)
@@ -97,12 +97,17 @@ def parse_einfo_resp(xml_str: str) -> dict:
     # Extract keywords
     keywords = [keyword.text for keyword in root.findall(".//Keyword") if keyword.text]
 
+    # Extract PMC ID, show it can be used to fetch PMC files, then to download
+    pmc_elem = root.find(".//ArticleId[@IdType='pmc']")
+    pmc_id = pmc_elem.text if pmc_elem is not None else None
+
     return {
         "title": title,
         "abstract": abstract,
         "authors": authors,
         "date_revised": date_revised,
         "keywords": keywords,
+        "pmc_id": pmc_id,
     }
 
 

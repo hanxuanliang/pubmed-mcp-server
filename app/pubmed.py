@@ -2,6 +2,7 @@ from fastapi import FastAPI, Query
 from typing import Optional, List
 from pydantic import BaseModel
 
+from service.file import earticle_pdf
 from service.search import esearch, einfo
 
 
@@ -51,4 +52,16 @@ async def einfo_pubmed(
     Returns metadata from the PubMed response.
     """
     result = einfo(pmid=pmid)
+    return result
+
+
+@app.get("/download", operation_id="earticle_download_pdf")
+async def earticle_download_pdf(
+    pmc_id: str = Query(..., description="The PMC ID of the article"),
+):
+    """
+    Download a PDF article from PMC and save it to the configured output path.
+    Returns the path to the saved PDF file.
+    """
+    result = earticle_pdf(pmc_id=pmc_id)
     return result

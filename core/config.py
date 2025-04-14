@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     Attributes:
         pdf_output_path: Directory path where PDF files will be stored
     """
-    pdf_output_path: str = "/tmp/pubmed-pdfs"
+    download_path: str = "/tmp/pubmed-pdfs"
 
     class Config:
         env_file = ".env"

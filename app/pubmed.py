@@ -2,7 +2,7 @@ from fastapi import FastAPI, Query
 from typing import Optional, List
 from pydantic import BaseModel
 
-from service.file import earticle_pdf
+from service.file import earticle_pdf_local
 from service.search import esearch, einfo
 
 
@@ -41,6 +41,7 @@ class ArticleInfoResp(BaseModel):
     authors: List[str]
     date_revised: str
     keywords: List[str]
+    pmc_id: str
 
 
 @app.get("/einfo", response_model=ArticleInfoResp, operation_id="einfo_pubmed")
@@ -55,13 +56,18 @@ async def einfo_pubmed(
     return result
 
 
-@app.get("/download", operation_id="earticle_download_pdf")
-async def earticle_download_pdf(
+class DownloadResp(BaseModel):
+    file_path: str
+
+
+@app.get("/download", response_model=DownloadResp, operation_id="earticle_download")
+async def earticle_download(
     pmc_id: str = Query(..., description="The PMC ID of the article"),
 ):
     """
     Download a PDF article from PMC and save it to the configured output path.
     Returns the path to the saved PDF file.
     """
-    result = earticle_pdf(pmc_id=pmc_id)
-    return result
+    file_path = earticle_pdf_local(pmc_id=pmc_id)
+
+    return {"file_path": file_path}

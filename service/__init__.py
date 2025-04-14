@@ -2,6 +2,7 @@ import urllib.parse
 from typing import Optional, Literal
 
 BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
+BASE_META_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id={pmid}&retmode=xml"
 
 
 def build_pubmed_search_url(
